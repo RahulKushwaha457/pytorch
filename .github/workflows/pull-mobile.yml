@@ -1,0 +1,28 @@
+name: pull-mobile
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  IN_CI: 1 # TODO delete in favor of GITHUB_ACTIONS
+  IS_GHA: 1 # TODO delete in favor of GITHUB_ACTIONS
+
+jobs:
+  linux-xenial-py3-clang5-mobile-build:
+    name: linux-xenial-py3-clang5-mobile-build
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-xenial-py3-clang5-mobile-build
+      docker-image-name: pytorch-linux-xenial-py3-clang5-asan
+      build-generates-artifacts: false
+
+  linux-xenial-py3-clang5-mobile-custom-build-static:
+    name: linux-xenial-py3-clang5-mobile-custom-build-static
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-xenial-py3-clang5-mobile-custom-build-static
+      docker-image-name: pytorch-linux-xenial-py3-clang5-android-ndk-r19c
+      build-generates-artifacts: false

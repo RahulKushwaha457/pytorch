@@ -1,0 +1,145 @@
+name: pull-cpu
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  IN_CI: 1 # TODO delete in favor of GITHUB_ACTIONS
+  IS_GHA: 1 # TODO delete in favor of GITHUB_ACTIONS
+
+jobs:
+  linux-xenial-py3_7-gcc5_4-build:
+    name: linux-xenial-py3.7-gcc5.4
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-xenial-py3.7-gcc5.4
+      docker-image-name: pytorch-linux-xenial-py3.7-gcc5.4
+
+  linux-xenial-py3_7-gcc5_4-test:
+    name: linux-xenial-py3.7-gcc5.4
+    uses: ./.github/workflows/_linux-test.yml
+    needs: linux-xenial-py3_7-gcc5_4-build
+    with:
+      build-environment: linux-xenial-py3.7-gcc5.4
+      docker-image: ${{ needs.linux-xenial-py3_7-gcc5_4-build.outputs.docker-image }}
+      test-matrix: |
+        { include: [
+          { config: "default", shard: 1, num_shards: 2, runner: "linux.2xlarge" },
+          { config: "default", shard: 2, num_shards: 2, runner: "linux.2xlarge" },
+          { config: "distributed", shard: 1, num_shards: 1, runner: "linux.2xlarge" },
+          { config: "docs_test", shard: 1, num_shards: 1,  runner: "linux.2xlarge" },
+          { config: "backwards_compat", shard: 1, num_shards: 1, runner: "linux.2xlarge" },
+          { config: "jit_legacy", shard: 1, num_shards: 1, runner: "linux.2xlarge" },
+        ]}
+
+  docs:
+    name: docs build
+    uses: ./.github/workflows/_docs.yml
+    needs: linux-xenial-py3_7-gcc5_4-build
+    with:
+      build-environment: linux-xenial-py3.7-gcc5.4
+      docker-image: ${{ needs.linux-xenial-py3_7-gcc5_4-build.outputs.docker-image }}
+
+  linux-xenial-py3_7-gcc7-build:
+    name: linux-xenial-py3.7-gcc7
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-xenial-py3.7-gcc7
+      docker-image-name: pytorch-linux-xenial-py3.7-gcc7
+
+  linux-xenial-py3_7-gcc7-test:
+    name: linux-xenial-py3.7-gcc7
+    uses: ./.github/workflows/_linux-test.yml
+    needs: linux-xenial-py3_7-gcc7-build
+    with:
+      build-environment: linux-xenial-py3.7-gcc7
+      docker-image: ${{ needs.linux-xenial-py3_7-gcc7-build.outputs.docker-image }}
+      test-matrix: |
+        { include: [
+          { config: "default", shard: 1, num_shards: 2, runner: "linux.2xlarge" },
+          { config: "default", shard: 2, num_shards: 2, runner: "linux.2xlarge" },
+        ]}
+
+  linux-xenial-py3_7-clang7-asan-build:
+    name: linux-xenial-py3.7-clang7-asan
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-xenial-py3.7-clang7-asan
+      docker-image-name: pytorch-linux-xenial-py3-clang7-asan
+
+  linux-xenial-py3_7-clang7-asan-test:
+    name: linux-xenial-py3.7-clang7-asan
+    uses: ./.github/workflows/_linux-test.yml
+    needs: linux-xenial-py3_7-clang7-asan-build
+    with:
+      build-environment: linux-xenial-py3.7-clang7-asan
+      docker-image: ${{ needs.linux-xenial-py3_7-clang7-asan-build.outputs.docker-image }}
+      test-matrix: |
+        { include: [
+          { config: "default", shard: 1, num_shards: 3, runner: "linux.2xlarge" },
+          { config: "default", shard: 2, num_shards: 3, runner: "linux.2xlarge" },
+          { config: "default", shard: 3, num_shards: 3, runner: "linux.2xlarge" },
+        ]}
+
+  linux-xenial-py3_7-clang7-onnx-build:
+    name: linux-xenial-py3.7-clang7-onnx
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-xenial-py3.7-clang7-onnx
+      docker-image-name: pytorch-linux-xenial-py3-clang7-onnx
+
+  linux-xenial-py3_7-clang7-onnx-test:
+    name: linux-xenial-py3.7-clang7-onnx
+    uses: ./.github/workflows/_linux-test.yml
+    needs: linux-xenial-py3_7-clang7-onnx-build
+    with:
+      build-environment: linux-xenial-py3.7-clang7-onnx
+      docker-image: ${{ needs.linux-xenial-py3_7-clang7-onnx-build.outputs.docker-image }}
+      test-matrix: |
+        { include: [
+          { config: "default", shard: 1, num_shards: 2, runner: "linux.2xlarge" },
+          { config: "default", shard: 2, num_shards: 2, runner: "linux.2xlarge" },
+        ]}
+
+  linux-bionic-py3_7-clang9-build:
+    name: linux-bionic-py3.7-clang9
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-bionic-py3.7-clang9
+      docker-image-name: pytorch-linux-bionic-py3.7-clang9
+
+  linux-bionic-py3_7-clang9-test:
+    name: linux-bionic-py3.7-clang9
+    uses: ./.github/workflows/_linux-test.yml
+    needs: linux-bionic-py3_7-clang9-build
+    with:
+      build-environment: linux-bionic-py3.7-clang9
+      docker-image: ${{ needs.linux-bionic-py3_7-clang9-build.outputs.docker-image }}
+      test-matrix: |
+        { include: [
+          { config: "default", shard: 1, num_shards: 2, runner: "linux.2xlarge" },
+          { config: "default", shard: 2, num_shards: 2, runner: "linux.2xlarge" },
+          { config: "noarch", shard: 1, num_shards: 1, runner: "linux.2xlarge" },
+        ]}
+
+  linux-vulkan-bionic-py3_7-clang9-build:
+    name: linux-vulkan-bionic-py3.7-clang9
+    uses: ./.github/workflows/_linux-build.yml
+    with:
+      build-environment: linux-vulkan-bionic-py3.7-clang9
+      docker-image-name: pytorch-linux-bionic-py3.7-clang9
+
+  linux-vulkan-bionic-py3_7-clang9-test:
+    name: linux-vulkan-bionic-py3.7-clang9
+    uses: ./.github/workflows/_linux-test.yml
+    needs: linux-vulkan-bionic-py3_7-clang9-build
+    with:
+      build-environment: linux-vulkan-bionic-py3.7-clang9
+      docker-image: ${{ needs.linux-vulkan-bionic-py3_7-clang9-build.outputs.docker-image }}
+      test-matrix: |
+        { include: [
+          { config: "default", shard: 1, num_shards: 1, runner: "linux.2xlarge" },
+        ]}
